@@ -1,44 +1,61 @@
-version: '2'
+version: '2.7'
 
 services:
   mongo-db:
     image: mongo
     ports:
       - 27017:27017
+    networks:
+      - call-app-nw
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=mongoadmin 
-      - MONGO_INITDB_ROOT_PASSWORD=secret 
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
       - MONGO_INITDB_DATABASE=my_db
 
   user-api:
     build: ./user-api
+    container_name: "user-api"
     ports:
       - 1004:1004
     environment:
-      - MONGO_URL=mongodb://mongoadmin:secret@machine-ip:27017/?retryWrites=true&w=majority
-      - ADMIN_EMAIL=admin@deekshithsn.co.in
+      - MONGO_URL=mongodb://mongoadmin:secret@13.61.196.155:27017/?retryWrites=true&w=majority
+      - ADMIN_EMAIL=ramyawork22@gmail.com
     depends_on:
       - mongo-db
+    networks:
+      - call-app-nw
 
   admin-api:
     build: ./admin-api
+    container_name: "admin-api"
     ports:
       - 1005:1004
     environment:
-      - MONGO_URL=mongodb://mongoadmin:secret@machine-ip:27017/?retryWrites=true&w=majority
+      - MONGO_URL=mongodb://mongoadmin:secret@13.61.196.155:27017/?retryWrites=true&w=majority
     depends_on:
       - mongo-db
+    networks:
+      - call-app-nw
 
   user-ui:
     build: ./user-ui
+    container_name: "user-ui"
     ports:
-      - 3000:3000 
+      - 3000:3000
+    networks:
+      - call-app-nw
     depends_on:
       - user-api
 
   admin-ui:
     build: ./admin-ui
+    container_name: "admin-ui"
     ports:
       - 3001:3000
+    networks:
+      - call-app-nw
     depends_on:
       - admin-api
+
+networks:
+  call-app-nw:
